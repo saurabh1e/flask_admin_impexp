@@ -1,0 +1,19 @@
+{% extends 'admin/model/list.html' %}
+
+{% block model_menu_bar %}
+{{ super() }}
+
+    <div class="col-md-4">
+        <form name="importForm col-md-12" id="importForm" method="post"  enctype="multipart/form-data" class="form-inline" action="import">
+            <div class="form-group col-md-8">
+                <input type="file" class="form-control" name="files">
+            </div>
+            <div class="form-group col-md-3">
+                <button type="submit" class="form-control btn btn-success">Upload</button>
+            </div>
+
+        </form>
+    </div>
+
+
+{% endblock %}
