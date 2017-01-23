@@ -7,7 +7,7 @@ A simple utility to add import functionality to flask admin when using sqlalchem
 ``` python
 from flask_admin_impexp.admin_impexp import AdminImportExport
 
-class AdminModel(AdminImportExport):
+class MyModel(AdminImportExport):
     pass
 
 
