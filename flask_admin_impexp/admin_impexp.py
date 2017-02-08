@@ -138,7 +138,7 @@ class AdminImportExport(sqla.ModelView):
         bulk_add = []
         primary_keys = self.get_primary_key()
         for row in data:
-            row = {k: v if v else None for k, v in row.items()}
+            row = {k: v if v is not None and v != '' else None for k, v in row.items()}
             filters = self.get_primary_filters(primary_keys, row)
 
             if None not in filters.values():
