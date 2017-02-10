@@ -14,11 +14,12 @@ import csv
 import tablib
 import mimetypes
 
-from flask import Response, stream_with_context, jsonify, make_response
+from flask import Response, stream_with_context, jsonify, make_response, json
 from flask_admin.babel import gettext
 from sqlalchemy.exc import OperationalError, IntegrityError, InvalidRequestError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from flask_admin.helpers import get_redirect_target
+from sqlalchemy.sql.sqltypes import  JSON, ARRAY
 import flask_excel as excel
 
 from flask import request, flash, redirect
@@ -137,10 +138,10 @@ class AdminImportExport(sqla.ModelView):
         bulk_updates = []
         bulk_add = []
         primary_keys = self.get_primary_key()
+        json_columns = self.get_json_columns()
         for row in data:
-            row = {k: v if v is not None and v != '' else None for k, v in row.items()}
+            row = {k: self.convert_type(k, v, json_columns) for k, v in row.items()}
             filters = self.get_primary_filters(primary_keys, row)
-
             if None not in filters.values():
                 if self.get_instance(**filters):
                     bulk_updates.append(row)
@@ -173,3 +174,17 @@ class AdminImportExport(sqla.ModelView):
             prop.key: row.get(prop.key) if row.get(prop.key) else None
             for prop in primary_keys
         }
+
+    def get_json_columns(self):
+        mapper = self.model.__mapper__
+        return [key for key, value in mapper.columns.items() if isinstance(value.type, JSON) or
+                isinstance(value.type, ARRAY)]
+
+    @staticmethod
+    def convert_type(k, v, json_columns):
+        if v is not None and v != '':
+            if k in json_columns:
+                v = json.loads(v)
+            return v
+        else:
+            return None
