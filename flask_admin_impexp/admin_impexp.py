@@ -30,7 +30,6 @@ from flask_admin.contrib import sqla
 class AdminImportExport(sqla.ModelView):
     can_export = True
     export_types = ('csv',)
-    column_filters = ('id',)
 
     @expose('/export/<export_type>/')
     def export(self, export_type):
